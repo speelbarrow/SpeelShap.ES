@@ -1,0 +1,16 @@
+import { Canvas, Meta } from "@storybook/blocks"
+import { linkTo } from "@storybook/addon-links"
+import * as Stories from "./stories.ts"
+
+<Meta of={Stories} />
+
+# Book
+
+`Book`s iterate through `Page`s, either by index...
+<Canvas of={Stories.Index} sourceState="shown" />
+
+...or by ID.
+<Canvas of={Stories.ID} sourceState="shown" />
+
+You can learn more about the specifics of how the component works by looking at the interaction test of the [Navigation](
+/story/components-book--navigation) component.

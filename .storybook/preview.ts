@@ -9,13 +9,24 @@ const config: DOMPurify.Config = {
   },
 }
 const preview: Preview = {
+  decorators: [(story, context) => {
+    return story({ args: { ...context.args, ["data-testid"]: context.component } })
+  }],
+
   render: (args, context) => {
     const r = new (customElements.get(context.component!)!)()
     for (const [key, value] of Object.entries(args)) {
       if (key === "children")
         r.innerHTML = DOMPurify.sanitize(value, config) as string
-      else
-        r.setAttribute(key, DOMPurify.sanitize(value, config) as string)
+      else {
+        if (typeof value === "boolean")
+          if (value)
+            r.setAttribute(key, "")
+          else
+            r.removeAttribute(key)
+        else
+          r.setAttribute(key, DOMPurify.sanitize(value, config) as string)
+      }
     }
     return r
   },
