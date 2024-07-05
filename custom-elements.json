@@ -1,0 +1,516 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "src/components/index.ts",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/util/CustomElements.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "CustomElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "mutexes",
+              "type": {
+                "text": "{ [key: string]: Mutex }"
+              },
+              "privacy": "protected",
+              "default": "{}"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "customElement": true
+        },
+        {
+          "kind": "mixin",
+          "description": "",
+          "name": "withShadow",
+          "members": [
+            {
+              "kind": "field",
+              "name": "#shadow",
+              "privacy": "private",
+              "type": {
+                "text": "ShadowRoot"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "shadow",
+              "privacy": "private"
+            }
+          ],
+          "parameters": [
+            {
+              "name": "C",
+              "type": {
+                "text": "T extends ShadowConstructor ? never : T"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "mixin",
+          "description": "",
+          "name": "withInternals",
+          "members": [
+            {
+              "kind": "field",
+              "name": "#internals",
+              "privacy": "private",
+              "type": {
+                "text": "ElementInternals"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "internals",
+              "privacy": "private"
+            }
+          ],
+          "parameters": [
+            {
+              "name": "C",
+              "type": {
+                "text": "T extends InternalsConstructor ? never : T"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "formAssociated",
+          "return": {
+            "type": {
+              "text": "FormAssociatedConstructor & T"
+            }
+          },
+          "parameters": [
+            {
+              "name": "C",
+              "type": {
+                "text": "T extends InternalsConstructor ? never : T"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "generateId",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          },
+          "parameters": [
+            {
+              "name": "prefix",
+              "optional": true,
+              "type": {
+                "text": "string"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "CustomElement",
+          "declaration": {
+            "name": "CustomElement",
+            "module": "src/util/CustomElements.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "withShadow",
+          "declaration": {
+            "name": "withShadow",
+            "module": "src/util/CustomElements.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "withInternals",
+          "declaration": {
+            "name": "withInternals",
+            "module": "src/util/CustomElements.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "formAssociated",
+          "declaration": {
+            "name": "formAssociated",
+            "module": "src/util/CustomElements.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "generateId",
+          "declaration": {
+            "name": "generateId",
+            "module": "src/util/CustomElements.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/Book/index.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "This component handles displaying one view, or, \"Page\", at a time from a collection.",
+          "name": "Book",
+          "members": [
+            {
+              "kind": "field",
+              "name": "#current",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "#page",
+              "privacy": "private",
+              "type": {
+                "text": "[Page, number] | null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#updated",
+              "privacy": "private",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "#wraparound",
+              "privacy": "private",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "#memoPages",
+              "privacy": "private",
+              "type": {
+                "text": "Page[] | undefined"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#pages",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#unsetPage",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "page",
+                  "optional": true,
+                  "type": {
+                    "text": "Page"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#switch",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "pages",
+                  "type": {
+                    "text": "Page[]"
+                  }
+                },
+                {
+                  "name": "index",
+                  "type": {
+                    "text": "number"
+                  }
+                },
+                {
+                  "name": "old",
+                  "default": "this.#page?.[0]",
+                  "type": {
+                    "text": "Page | undefined"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "switchByIndex",
+              "parameters": [
+                {
+                  "name": "index",
+                  "type": {
+                    "text": "number"
+                  }
+                },
+                {
+                  "name": "pages",
+                  "optional": true,
+                  "type": {
+                    "text": "Page[]"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "switchById",
+              "parameters": [
+                {
+                  "name": "id",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "previous"
+            },
+            {
+              "kind": "method",
+              "name": "next"
+            },
+            {
+              "kind": "method",
+              "name": "attribute_page",
+              "parameters": [
+                {
+                  "name": "_",
+                  "type": {
+                    "text": "string | null"
+                  }
+                },
+                {
+                  "name": "page",
+                  "type": {
+                    "text": "string | null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "attribute_wraparound",
+              "parameters": [
+                {
+                  "name": "_",
+                  "type": {
+                    "text": "string | null"
+                  }
+                },
+                {
+                  "name": "wraparound",
+                  "type": {
+                    "text": "string | null"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"current\""
+            },
+            {
+              "kind": "field",
+              "name": "display",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"none\""
+            },
+            {
+              "kind": "field",
+              "name": "#shadow",
+              "privacy": "private",
+              "type": {
+                "text": "ShadowRoot"
+              },
+              "inheritedFrom": {
+                "name": "withShadow",
+                "module": "src/util/CustomElements.ts"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "shadow",
+              "privacy": "private",
+              "inheritedFrom": {
+                "name": "withShadow",
+                "module": "src/util/CustomElements.ts"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "mutexes",
+              "type": {
+                "text": "{ [key: string]: Mutex }"
+              },
+              "privacy": "protected",
+              "default": "{}",
+              "inheritedFrom": {
+                "name": "CustomElement",
+                "module": "src/util/CustomElements.ts"
+              }
+            }
+          ],
+          "mixins": [
+            {
+              "name": "withShadow",
+              "module": "/src/util/CustomElements.js"
+            }
+          ],
+          "superclass": {
+            "name": "CustomElement",
+            "module": "/src/util/CustomElements.js"
+          }
+        },
+        {
+          "kind": "class",
+          "description": "This class simply serves as a container for content. It does not have any special functionality on its own.",
+          "name": "Page",
+          "superclass": {
+            "name": "CustomElement",
+            "module": "/src/util/CustomElements.js"
+          },
+          "members": [
+            {
+              "kind": "field",
+              "name": "mutexes",
+              "type": {
+                "text": "{ [key: string]: Mutex }"
+              },
+              "privacy": "protected",
+              "default": "{}",
+              "inheritedFrom": {
+                "name": "CustomElement",
+                "module": "src/util/CustomElements.ts"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "Book",
+            "module": "src/components/Book/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "Page",
+          "declaration": {
+            "name": "Page",
+            "module": "src/components/Book/index.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "declaration": {
+            "name": "C",
+            "module": "src/components/Book/index.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/Book/stories.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "Index",
+          "type": {
+            "text": "StoryObj"
+          },
+          "default": "{ args: { page: \"0\", }, argTypes: { page: { options: [\"0\", \"1\", \"2\"], }, }, }"
+        },
+        {
+          "kind": "variable",
+          "name": "ID",
+          "type": {
+            "text": "StoryObj"
+          },
+          "default": "{ args: { page: \"foo\", }, }"
+        },
+        {
+          "kind": "variable",
+          "name": "Navigation",
+          "type": {
+            "text": "StoryObj"
+          },
+          "default": "{ args: { page: \"foo\", }, argTypes: { wraparound: { table: { disable: false, }, }, page: { table: { disable: true, }, }, }, decorators: [ (story) => { const [book, previous, next] = [ story() as Book, document.createElement(\"button\"), document.createElement(\"button\"), ] previous.textContent = \"Previous\" previous.onclick = book.previous.bind(book) next.textContent = \"Next\" next.onclick = book.next.bind(book) return html`${book}<br>${previous}${next}` }, ], async play({ argTypes, args, canvasElement, step }) { const canvas = within(canvasElement) const list = argTypes.page.options as string[] const book = canvas.getByTestId(\"sp-book\") as Book book.removeAttribute(\"wraparound\") async function click(getByText: string) { await userEvent.click(canvas.getByText(getByText, { normalizer: (text) => getDefaultNormalizer()(text).toLowerCase(), })) } for (const direction of [\"next\", \"previous\"]) { await step(`Cycle through pages using \"${direction}\" method`, async () => { await step(`Set initial \"page\" value to \"${list[0]}\"`, async () => { book.setAttribute(\"page\", list[0]) await waitFor(async () => await expect(book).toHaveCurrent(list[0])) }) for (const page of list.slice(1)) await step(`Navigate to ${direction} page, ${page}`, async () => { await click(direction) await waitFor(async () => await expect(book).toHaveCurrent(page)) }) }) list.reverse() } await step(\"Try to navigate to the last page using the `previous` method (expected to fail because wraparound is \" + \"not yet enabled)\", async () => { await expect(book).toHaveCurrent(list[0]) }) await step(\"Enable wraparound\", async () => book.setAttribute(\"wraparound\", \"\")) await step(\"Navigate to the last page using the `previous` method\", async () => { await book.previous() await waitFor(async () => await expect(book).toHaveCurrent(list[list.length - 1])) }) await step(\"Navigate to the first page using the `next` method\", async () => { await book.next() await waitFor(async () => await expect(book).toHaveCurrent(list[0])) }) if (!args.wraparound) { book.removeAttribute(\"wraparound\") } }, }"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "module": "src/components/Book/stories.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "Index",
+          "declaration": {
+            "name": "Index",
+            "module": "src/components/Book/stories.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ID",
+          "declaration": {
+            "name": "ID",
+            "module": "src/components/Book/stories.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "Navigation",
+          "declaration": {
+            "name": "Navigation",
+            "module": "src/components/Book/stories.ts"
+          }
+        }
+      ]
+    }
+  ]
+}
