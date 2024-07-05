@@ -1,0 +1,95 @@
+name: Release
+on:
+  workflow_call:
+    inputs:
+      source:
+        description: "Source ref to get files from"
+        required: true
+        type: string
+      destination:
+        description: "Destination branch to push release to."
+        required: true
+        type: string
+      tag:
+        description: >-
+          Name of the git tag for this release. When omitted, the build is pushed but the release steps are skipped.
+        required: false
+        type: string
+      message:
+        description: >-
+          Commit message string. Defaults to the source commit message if not provided. This will also be the name
+          of the release.
+        required: false
+        type: string
+      changelog:
+        description: >-
+          Header to look for when attempting to extract the release description from CHANGELOG.md. Defaults to
+          `inputs.tag`.
+        required: false
+        type: string
+      pre:
+        description: "Marks this release as a pre-release."
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    name: Build and deploy GitHub release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout and setup
+        uses: speelbarrow/checkout-and-setup@v1.2
+        with:
+          ref: ${{ inputs.destination }}
+          setup: main
+          variables: |
+            shopt -s extglob
+            rm -r !(.git*) .storybook || true
+            git fetch origin ${{ inputs.source }}
+            git checkout FETCH_HEAD -- README.md CHANGELOG.md LICENSE package.json src bun.lockb tsconfig.json
+            git rm -r --cached !(.gitignore)
+
+      - name: Build the package and push to `${{ inputs.destination }}`
+        id: push
+        env:
+          MESSAGE: ${{ inputs.message }}
+        run: |
+          bun run build
+          git add .
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -m "${MESSAGE:-$(git rev-list --format="%s%b" --max-count=1 "${{ github.sha }}" | tail -n 1)}"
+          git push
+          SHA=`git rev-parse HEAD`
+          echo "$SHA"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          NAME=`git rev-list --format="%s%b" --max-count=1 HEAD | tail -n 1`
+          echo "$NAME"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Extract and output release changes from CHANGELOG.md
+        if: ${{ inputs.tag }}
+        id: changes
+        run: | 
+          TAG_NAME="${{ inputs.changelog && inputs.changelog || inputs.tag }}"
+          CHANGES="$(cat CHANGELOG.md | sed -n "/${TAG_NAME//./\.}/,/^$/p" | sed 1d)"
+          echo "$CHANGES"
+          echo "changes<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$CHANGES" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release
+        if: ${{ inputs.tag }}
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ steps.push.outputs.name }}
+          tag_name: ${{ inputs.tag }}
+          target_commitish: ${{ steps.push.outputs.sha }}
+          body: ${{ steps.changes.outputs.changes }}
+          prerelease: ${{ inputs.pre }}
+          draft: true

@@ -1,0 +1,35 @@
+name: CI/CD
+
+on:
+  push:
+    tags-ignore: [ '**' ]
+    branches: [ 'main' ]
+    paths:
+      - package.json
+      - bun.lockb
+      - tsconfig.json
+      - src/**
+      - .storybook/**
+      - .github/workflows/cicd.yml
+
+jobs: 
+  ci: 
+    name: CI
+    runs-on: ubuntu-latest 
+    steps:
+      - name: Checkout and setup
+        uses: speelbarrow/checkout-and-setup@v1.2
+      - name: Run Storybook integration tests
+        run: |
+          bunx storybook dev --ci --port 50000 > /dev/null &
+          bun run test --url http://localhost:50000
+          kill -9 $!
+
+  CD:       
+    uses: speelbarrow/SpeelShap.ES/.github/workflows/release.yml@main
+    permissions:
+      contents: write
+      packages: write
+    with:
+      source: ${{ github.ref_name }}
+      destination: edge

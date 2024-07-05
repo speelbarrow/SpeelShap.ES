@@ -1,0 +1,32 @@
+name: ''
+description: ''
+inputs:
+  variables:
+    description: ''
+    required: false
+  secrets:
+    description: ''
+    required: false
+runs:
+  using: composite
+  steps:
+    - name: Pre-setup
+      if: ${{ inputs.variables }}
+      shell: "/usr/bin/bash -e {0}"
+      run: ${{ inputs.variables }}
+    - name: Setup Bun
+      id: bun
+      uses: oven-sh/setup-bun@v2
+    - name: Configure dependency cache
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: '**/node_modules'
+        key: bun-${{ steps.bun.outputs.bun-revision }}-${{ hashFiles('**/bun.lockb') }}
+        restore-keys: |
+          bun-${{ steps.bun.outputs.bun-revision }}-
+          bun-
+    - name: Install missing dependencies
+      if: steps.cache.outputs.cache-hit != 'true' 
+      shell: "/usr/bin/bash -e {0}"
+      run: bun install
