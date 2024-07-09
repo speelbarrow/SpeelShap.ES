@@ -1,6 +1,10 @@
 import { Mutex } from "async-mutex"
 
 interface HasLifecycle {
+  connectedCallback?(): void
+  disconnectedCallback?(): void
+  adoptedCallback?(): void
+  attributeChangedCallback?(name: string, oldValue: string, newValue: string): void
 }
 export class CustomElement extends HTMLElement implements HasLifecycle {
   connectedCallback?(): void

@@ -21,10 +21,14 @@
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
     // Project-specific
+    "outDir": "dist",
     "declaration": true,
-    "outDir": "dist"
+    "emitDeclarationOnly": true
   },
   "include": [
     "src/**/*"
+  ],
+  "exclude": [
+    "src/**/*stories*"
   ]
 }

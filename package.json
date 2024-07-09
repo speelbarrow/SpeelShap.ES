@@ -2,14 +2,20 @@
   "name": "speelshapes",
   "type": "module",
   "module": "src/components/index.ts",
+  "customElements": "./custom-elements.json",
   "exports": {
-    "types": "./dist/components/index.d.ts",
-    "default": "./dist/components/index.js"
+    "./customElements": "./custom-elements.json",
+    ".": {
+      "types": "./dist/components/index.d.ts",
+      "default": "./dist/components/index.js"
+    }
   },
   "scripts": {
-    "build": "bunx cem analyze && bunx tsc",
+    "build": "bun run build.ts",
     "debug": "bunx storybook dev -p 6006",
-    "test": "bunx playwright install && bunx test-storybook -i"
+    "pretest": "bunx playwright install",
+    "test": "bunx test-storybook -i",
+    "clean": "bun run clean.ts"
   },
   "dependencies": {
     "async-mutex": "0.5.x"
@@ -41,7 +47,7 @@
     "typescript-eslint": "7.x"
   },
   "peerDependencies": {
-    "typescript": "5.x"
+    "typescript": "^5.4.5"
   },
   "eslintConfig": {
     "extends": [
