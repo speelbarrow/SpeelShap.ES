@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/web-components"
+import type { Args, Meta, StoryObj } from "@storybook/web-components"
 import type Book from "./index.js"
 import { expect as _expect, waitFor, within, userEvent, getDefaultNormalizer } from "@storybook/test"
 import { html } from "lit"
@@ -66,6 +66,20 @@ export default {
   },
 } as Meta
 
+async function play(args: Args, canvasElement: HTMLElement) {
+  const canvas = within(canvasElement)
+
+  const book = canvas.getByTestId("sp-book") as Book
+
+  const current = book.shadow.querySelector("slot[name='current']") as HTMLSlotElement
+  await expect(current).toBeTruthy()
+
+  const assigned = current.assignedNodes()
+  await expect(assigned.length).toBe(1)
+
+  return { canvas, book, current, assigned: assigned[0] }
+}
+
 export const Index: StoryObj = {
   args: {
     page: "0",
@@ -75,11 +89,19 @@ export const Index: StoryObj = {
       options: ["0", "1", "2"],
     },
   },
+  async play({ args, canvasElement }) {
+    const { book, assigned } = await play(args, canvasElement)
+    expect(book.children.item(parseInt(args.page))).toBe(assigned)
+  },
 }
 
 export const ID: StoryObj = {
   args: {
     page: "foo",
+  },
+  async play({ args, canvasElement }) {
+    const { assigned } = await play(args, canvasElement)
+    expect((assigned as Element).id).toBe(args.page)
   },
 }
 
@@ -117,11 +139,10 @@ export const Navigation: StoryObj = {
     },
   ],
   async play({ argTypes, args, canvasElement, step }) {
-    const canvas = within(canvasElement)
-    const list = argTypes.page.options as string[]
-
-    const book = canvas.getByTestId("sp-book") as Book
+    const { canvas, book } = await play(args, canvasElement)
     book.removeAttribute("wraparound")
+
+    const list = argTypes.page.options as string[]
 
     async function click(getByText: string) {
       await userEvent.click(canvas.getByText(getByText, {
