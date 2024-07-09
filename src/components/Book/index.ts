@@ -1,4 +1,4 @@
-import { CustomElement, withShadow } from "../../util/CustomElements.js"
+import { CustomElement, register, withShadow } from "../../util/CustomElements.js"
 
 /** This component handles displaying one view, or, "Page", at a time from a collection.
  * @see Page
@@ -118,5 +118,5 @@ export default class Book extends withShadow(CustomElement) {
  */
 export class Page extends CustomElement { }
 
-for (const [name, C] of Object.entries({ Book, Page }))
-  customElements.define("sp-" + name.toLowerCase(), C)
+for (const C of [Book, Page])
+  register(C)

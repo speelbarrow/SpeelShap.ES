@@ -115,10 +115,6 @@ export function formAssociated<T extends CustomElementConstructor>(C: T extends 
   } as FormAssociatedConstructor & T
 }
 
-export function generateId(prefix?: string): string {
-  let r: string
-  do {
-    r = prefix ? `${prefix}-` : "" + Math.random().toString(36).slice(2)
-  } while (document.getElementById(r))
-  return r
+export function register(C: CustomElementConstructor) {
+  customElements.define("sp-" + C.name.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(), C)
 }
