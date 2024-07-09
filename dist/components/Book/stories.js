@@ -66,6 +66,17 @@ export default {
 </sp-page>`,
     },
 };
+function play(args, canvasElement) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const canvas = within(canvasElement);
+        const book = canvas.getByTestId("sp-book");
+        const current = book.shadow.querySelector("slot[name='current']");
+        yield expect(current).toBeTruthy();
+        const assigned = current.assignedNodes();
+        yield expect(assigned.length).toBe(1);
+        return { canvas, book, current, assigned: assigned[0] };
+    });
+}
 export const Index = {
     args: {
         page: "0",
@@ -75,10 +86,22 @@ export const Index = {
             options: ["0", "1", "2"],
         },
     },
+    play(_a) {
+        return __awaiter(this, arguments, void 0, function* ({ args, canvasElement }) {
+            const { book, assigned } = yield play(args, canvasElement);
+            expect(book.children.item(parseInt(args.page))).toBe(assigned);
+        });
+    },
 };
 export const ID = {
     args: {
         page: "foo",
+    },
+    play(_a) {
+        return __awaiter(this, arguments, void 0, function* ({ args, canvasElement }) {
+            const { assigned } = yield play(args, canvasElement);
+            expect(assigned.id).toBe(args.page);
+        });
     },
 };
 export const Navigation = {
@@ -113,10 +136,9 @@ export const Navigation = {
     ],
     play(_a) {
         return __awaiter(this, arguments, void 0, function* ({ argTypes, args, canvasElement, step }) {
-            const canvas = within(canvasElement);
-            const list = argTypes.page.options;
-            const book = canvas.getByTestId("sp-book");
+            const { canvas, book } = yield play(args, canvasElement);
             book.removeAttribute("wraparound");
+            const list = argTypes.page.options;
             function click(getByText) {
                 return __awaiter(this, void 0, void 0, function* () {
                     yield userEvent.click(canvas.getByText(getByText, {
