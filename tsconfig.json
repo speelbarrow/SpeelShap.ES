@@ -30,6 +30,7 @@
   ],
   "exclude": [
     "src/**/*test*",
+    "src/util/Test.ts",
     "src/**/*stories*"
   ]
 }
