@@ -5,7 +5,7 @@
       "ESNext",
       "DOM"
     ],
-    "target": "ES6",
+    "target": "ES2022",
     "module": "ESNext",
     "moduleDetection": "force",
     "allowJs": true,
@@ -23,12 +23,13 @@
     // Project-specific
     "outDir": "dist",
     "declaration": true,
-    "emitDeclarationOnly": true
+    "noEmitHelpers": true
   },
   "include": [
     "src/**/*"
   ],
   "exclude": [
+    "src/**/*test*",
     "src/**/*stories*"
   ]
 }

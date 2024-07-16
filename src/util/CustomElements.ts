@@ -1,4 +1,4 @@
-import { Mutex } from "async-mutex"
+import { MutexArray } from "./Atomics.js"
 
 interface HasLifecycle {
   connectedCallback?(): void
@@ -7,22 +7,19 @@ interface HasLifecycle {
   attributeChangedCallback?(name: string, oldValue: string, newValue: string): void
 }
 export class CustomElement extends HTMLElement implements HasLifecycle {
-  connectedCallback?(): void
-  disconnectedCallback?(): void
-  adoptedCallback?(): void
-
-  protected mutexes: { [key: string]: Mutex } = {}
+  protected mutexes: MutexArray = new MutexArray((this.constructor as CustomElementConstructor).observedAttributes.length)
   constructor(style: { [key: string]: any } = {}) {
     super()
-    for (const attr of (this.constructor as CustomElementConstructor).observedAttributes)
-      this.mutexes[attr] = new Mutex()
     for (const [key, value] of Object.entries(style))
       this.style.setProperty(key, value)
   }
+
   async attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     if ("attribute_" + name in this) {
-      // @ts-expect-error - This is a hack to call the method dynamically
-      await this.mutexes[name].runExclusive(async () => this["attribute_" + name](oldValue, newValue))
+      const lock = await this.mutexes.acquire((this.constructor as CustomElementConstructor).observedAttributes.indexOf(name))
+      // @ts-expect-error dynamic property access
+      await this["attribute_" + name](oldValue, newValue)
+      await this.mutexes.release(lock)
     }
   }
 

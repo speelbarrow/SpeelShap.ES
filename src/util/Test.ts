@@ -1,0 +1,16 @@
+export async function print_and_flush(...args: string[]) {
+  await Bun.write(Bun.stdout, args)
+  await Bun.stdout.writer().flush()
+}
+
+export async function shuffle<T>(list: T[]): Promise<T[]> {
+  const r: T[] = []
+
+  const indices = [...Array(list.length).keys()]
+  while (indices.length) {
+    const index = indices.splice(Math.floor(Math.random() * indices.length), 1)[0]
+    r.push(list[index])
+  }
+
+  return r
+}

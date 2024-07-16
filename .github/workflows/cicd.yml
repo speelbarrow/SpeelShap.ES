@@ -19,11 +19,15 @@ jobs:
     steps:
       - name: Checkout and setup
         uses: speelbarrow/checkout-and-setup@v1.2
-      - name: Run Storybook integration tests
+      - name: Additional setup
         run: |
-          bunx storybook dev --ci --port 50000 > /dev/null &
-          bun run test --url http://localhost:50000
-          kill -9 $!
+          bun run build
+          sed -E 's#^(import "\.\./)src(/components/index\.js")$#\1dist\2#' .storybook/preview.ts > .storybook/preview.tmp.ts 
+          mv .storybook/preview.tmp.ts .storybook/preview.ts
+      - name: Run tests
+        env:
+          SPALL: true
+        run: bun test
 
   CD:       
     uses: speelbarrow/SpeelShap.ES/.github/workflows/release.yml@main

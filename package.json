@@ -11,14 +11,10 @@
     }
   },
   "scripts": {
-    "build": "bun run build.ts",
+    "build": "tsc && cem analyze --globs dist/** --outdir dist",
     "debug": "bunx storybook dev -p 6006",
-    "pretest": "bunx playwright install",
-    "test": "bunx test-storybook -i",
-    "clean": "bun run clean.ts"
-  },
-  "dependencies": {
-    "async-mutex": "0.5.x"
+    "test": "bun test",
+    "clean": "rm -r dist"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "1.x",
