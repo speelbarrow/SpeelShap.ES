@@ -1,13 +1,12 @@
-import { Mutex } from "async-mutex";
+import { MutexArray } from "./Atomics.js";
 interface HasLifecycle {
-}
-export declare class CustomElement extends HTMLElement implements HasLifecycle {
     connectedCallback?(): void;
     disconnectedCallback?(): void;
     adoptedCallback?(): void;
-    protected mutexes: {
-        [key: string]: Mutex;
-    };
+    attributeChangedCallback?(name: string, oldValue: string, newValue: string): void;
+}
+export declare class CustomElement extends HTMLElement implements HasLifecycle {
+    protected mutexes: MutexArray;
     constructor(style?: {
         [key: string]: any;
     });
@@ -50,5 +49,5 @@ export interface FormAssociatedConstructor extends CustomElementConstructor<HasI
 export declare function withShadow<T extends CustomElementConstructor>(C: T extends ShadowConstructor ? never : T): ShadowConstructor & T;
 export declare function withInternals<T extends CustomElementConstructor>(C: T extends InternalsConstructor ? never : T): InternalsConstructor & T;
 export declare function formAssociated<T extends CustomElementConstructor>(C: T extends InternalsConstructor ? never : T): FormAssociatedConstructor & T;
-export declare function generateId(prefix?: string): string;
+export declare function register(C: CustomElementConstructor): void;
 export {};
