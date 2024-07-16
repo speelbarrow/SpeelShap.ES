@@ -468,48 +468,6 @@
           }
         }
       ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/util/Test.js",
-      "declarations": [
-        {
-          "kind": "function",
-          "name": "print_and_flush",
-          "parameters": [
-            {
-              "name": "args"
-            }
-          ]
-        },
-        {
-          "kind": "function",
-          "name": "shuffle",
-          "parameters": [
-            {
-              "name": "list"
-            }
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "print_and_flush",
-          "declaration": {
-            "name": "print_and_flush",
-            "module": "dist/util/Test.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "shuffle",
-          "declaration": {
-            "name": "shuffle",
-            "module": "dist/util/Test.js"
-          }
-        }
-      ]
     }
   ]
 }
